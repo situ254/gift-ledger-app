@@ -18,6 +18,7 @@ import android.webkit.WebResourceResponse
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -60,6 +61,14 @@ class MainActivity : AppCompatActivity() {
         errorLayout = findViewById(R.id.errorLayout)
         errorTitle = findViewById(R.id.errorTitle)
         errorMessage = findViewById(R.id.errorMessage)
+
+        // 绑定 errorLayout 中的按钮
+        val retryBtn = findViewById<Button>(R.id.retryButton)
+        val settingsBtn = findViewById<Button>(R.id.settingsButton)
+        retryBtn?.setOnClickListener { hideError(); loadUrl() }
+        settingsBtn?.setOnClickListener {
+            startActivity(Intent(this, SettingsActivity::class.java))
+        }
     }
 
     private fun isServerConfigured(): Boolean {
