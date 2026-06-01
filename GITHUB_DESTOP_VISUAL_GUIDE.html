@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub Desktop 使用教程 - 人情记账 App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            color: #24292e;
+            background: #f6f8fa;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        h1 {
+            color: #24292e;
+            border-bottom: 2px solid #0366d6;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+        
+        h2 {
+            color: #0366d6;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            padding-left: 10px;
+            border-left: 4px solid #0366d6;
+        }
+        
+        .step {
+            background: white;
+            border: 1px solid #e1e4e8;
+            border-radius: 6px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .step-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .step-number {
+            background: #0366d6;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+        
+        .step-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #24292e;
+        }
+        
+        .interface-mockup {
+            background: #f6f8fa;
+            border: 1px solid #e1e4e8;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 15px 0;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 13px;
+            line-height: 1.8;
+        }
+        
+        .mockup-window {
+            background: white;
+            border: 1px solid #e1e4e8;
+            border-radius: 6px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        
+        .mockup-titlebar {
+            background: #f6f8fa;
+            border-bottom: 1px solid #e1e4e8;
+            padding: 8px 15px;
+            font-size: 12px;
+            color: #586069;
+            display: flex;
+            align-items: center;
+        }
+        
+        .mockup-dots {
+            display: flex;
+            gap: 6px;
+            margin-right: 15px;
+        }
+        
+        .mockup-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+        
+        .dot-red { background: #ff5f57; }
+        .dot-yellow { background: #ffbd2e; }
+        .dot-green { background: #28ca42; }
+        
+        .mockup-body {
+            padding: 20px;
+        }
+        
+        .mockup-button {
+            background: #2ea44f;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-block;
+            margin: 5px 0;
+        }
+        
+        .mockup-button.blue {
+            background: #0366d6;
+        }
+        
+        .mockup-button.gray {
+            background: #f6f8fa;
+            color: #24292e;
+            border: 1px solid #e1e4e8;
+        }
+        
+        .mockup-input {
+            border: 1px solid #e1e4e8;
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-size: 14px;
+            width: 100%;
+            margin: 5px 0;
+            display: block;
+        }
+        
+        .mockup-checkbox {
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .info-box {
+            background: #f1f8ff;
+            border-left: 4px solid #0366d6;
+            padding: 12px 15px;
+            margin: 15px 0;
+            border-radius: 0 6px 6px 0;
+        }
+        
+        .warning-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 12px 15px;
+            margin: 15px 0;
+            border-radius: 0 6px 6px 0;
+        }
+        
+        .success-box {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 12px 15px;
+            margin: 15px 0;
+            border-radius: 0 6px 6px 0;
+        }
+        
+        code {
+            background: #f6f8fa;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 13px;
+            color: #e01e5a;
+        }
+        
+        pre {
+            background: #f6f8fa;
+            border: 1px solid #e1e4e8;
+            border-radius: 6px;
+            padding: 15px;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+        
+        pre code {
+            background: none;
+            padding: 0;
+        }
+        
+        .screenshot-placeholder {
+            background: #e1e4e8;
+            border: 2px dashed #586069;
+            border-radius: 6px;
+            padding: 40px;
+            text-align: center;
+            color: #586069;
+            font-size: 14px;
+            margin: 15px 0;
+        }
+        
+        .official-link {
+            background: #0366d6;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            display: inline-block;
+            margin: 10px 0;
+            font-weight: 600;
+        }
+        
+        .official-link:hover {
+            background: #0256b9;
+        }
+        
+        ol, ul {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+        
+        li {
+            margin: 8px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📱 GitHub Desktop 使用教程（可视化指南）</h1>
+        
+        <div class="info-box">
+            <strong>📖 说明：</strong>本教程使用界面模拟图展示每个步骤的操作位置。真实的截图请参考 <a href="https://docs.github.com/en/desktop" target="_blank">GitHub Desktop 官方文档</a>。
+        </div>
+        
+        <h2>第一步：下载并安装 GitHub Desktop</h2>
+        
+        <div class="step">
+            <div class="step-header">
+                <div class="step-number">1</div>
+                <div class="step-title">访问官网下载</div>
+            </div>
+            
+            <p>打开浏览器，访问：<code>https://desktop.github.com/</code></p>
+            
+            <div class="screenshot-placeholder">
+                📷 真实截图位置：GitHub Desktop 官网首页<br>
+                <small>你会看到一个绿色的 "Download for Windows" 按钮</small>
+            </div>
+            
+            <div class="interface-mockup">
+                <div class="mockup-window">
+                    <div class="mockup-titlebar">
+                        <div class="mockup-dots">
+                            <div class="mockup-dot dot-red"></div>
+                            <div class="mockup-dot dot-yellow"></div>
+                            <div class="mockup-dot dot-green"></div>
+                        </div>
+                        <span>GitHub Desktop - 官网</span>
+                    </div>
+                    <div class="mockup-body">
+                        <h3 style="color: #24292e; margin-bottom: 15px;">GitHub Desktop</h3>
+                        <p style="color: #586069; margin-bottom: 20px;">Extend your workflow beyond the browser. <br>Manage repositories, branches, and more with this simple GUI.</p>
+                        <div class="mockup-button">Download for Windows (64-bit)</div>
+                        <div style="margin-top: 10px; color: #586069; font-size: 12px;">Also available for macOS</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="step">
+            <div class="step-header">
+                <div class="step-number">2</div>
+                <div class="step-title">安装 GitHub Desktop</div>
+            </div>
+            
+            <p>下载完成后，双击运行 <code>GitHubDesktopSetup.exe</code>，按照默认选项安装即可。</p>
+            
+            <div class="info-box">
+                <strong>💡 提示：</strong>安装过程约 2-5 分钟，会自动下载必要的组件。
+            </div>
+        </div>
+        
+        <h2>第二步：登录 GitHub 账号</h2>
+        
+        <div class="step">
+            <div class="step-header">
+                <div class="step-number">3</div>
+                <div class="step-title">启动并登录</div>
+            </div>
+            
+            <p>安装完成后，GitHub Desktop 会自动启动，显示欢迎界面。</p>
+            
+            <div class="screenshot-placeholder">
+                📷 真实截图位置：GitHub Desktop 欢迎界面<br>
+                <small>左侧是 GitHub 章鱼猫咪图标，右侧有两个按钮</small>
+            </div>
+            
+            <div class="interface-mockup">
+                <div class="mockup-window">
+                    <div class="mockup-titlebar">
+                        <div class="mockup-dots">
+                            <div class="mockup-dot dot-red"></div>
+                            <div class="mockup-dot dot-yellow"></div>
+                            <div class="mockup-dot dot-green"></div>
+                        </div>
+                        <span>GitHub Desktop</span>
+                    </div>
+                    <div class="mockup-body" style="display: flex; gap: 20px;">
+                        <div style="flex: 1; display: flex; align-items: center; justify-content: center;">
+                            <div style="font-size: 64px; color: #24292e;">🐙</div>
+                        </div>
+                        <div style="flex: 1;">
+                            <h3 style="margin-bottom: 15px;">Welcome to GitHub Desktop</h3>
+                            <div class="mockup-button blue" style="margin-bottom: 10px; width: 100%; text-align: center;">Sign in to GitHub.com</div>
+                            <div class="mockup-button gray" style="margin-bottom: 10px; width: 100%; text-align: center;">Create your free account</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <ol>
+                <li>点击 <strong>Sign in to GitHub.com</strong> 按钮</li>
+                <li>浏览器会自动打开 GitHub 登录页面</li>
+                <li>输入你的 GitHub <strong>用户名</strong> 和 <strong>密码</strong></li>
+                <li>点击 <strong>Sign in</strong></li>
+                <li>授权页面点击 <strong>Authorize GitHub Desktop</strong></li>
+                <li>返回 GitHub Desktop，显示登录成功</li>
+            </ol>
+        </div>
+        
+        <h2>第三步：添加本地仓库</h2>
+        
+        <div class="step">
+            <div class="step-header">
+                <div class="step-number">4</div>
+                <div class="step-title">添加现有仓库</div>
+            </div>
+            
+            <p>现在将你本地的 Android 项目添加到 GitHub Desktop。</p>
+            
+            <div class="screenshot-placeholder">
+                📷 真实截图位置：GitHub Desktop 主界面 → File 菜单<br>
+                <small>或者按快捷键 Ctrl+Shift+O</small>
+            </div>
+            
+            <ol>
+                <li>在 GitHub Desktop 主界面，点击顶部菜单 <strong>File</strong></li>
+                <li>选择 <strong>Add Local Repository...</strong></li>
+                <li>或者按快捷键 <code>Ctrl+Shift+O</code></li>
+            </ol>
+            
+            <div class="interface-mockup">
+                <div class="mockup-window">
+                    <div class="mockup-titlebar">
+                        <div class="mockup-dots">
+                            <div class="mockup-dot dot-red"></div>
+                            <div class="mockup-dot dot-yellow"></div>
+                            <div class="mockup-dot dot-green"></div>
+                        </div>
+                        <span>GitHub Desktop - Add Local Repository</span>
+                    </div>
+                    <div class="mockup-body">
+                        <label style="font-weight: 600; display: block; margin-bottom: 5px;">Local path</label>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="text" class="mockup-input" value="C:\Users\Situdai\WorkBuddy\2026-06-01-10-23-39\gift-ledger-app" style="flex: 1;">
+                            <div class="mockup-button gray">Choose...</div>
+                        </div>
+                        <div class="mockup-checkbox">
+                            <input type="checkbox" id="checkbox1">
+                            <label for="checkbox1">Add repository to the list of repositories in the application</label>
+                        </div>
+                        <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: flex-end;">
+                            <div class="mockup-button gray">Cancel</div>
+                            <div class="mockup-button">Add repository</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="info-box">
+                <strong>📁 选择文件夹：</strong><br>
+                点击 <strong>Choose...</strong> 按钮，浏览到：<br>
+                <code>C:\Users\Situdai\WorkBuddy\2026-06-01-10-23-39\gift-ledger-app</code>
+            </div>
+        </div>
+        
+        <h2>第四步：发布仓库到 GitHub</h2>
+        
+        <div class="step">
+            <div class="step-header">
+                <div class="step-number">5</div>
+                <div class="step-title">点击 Publish repository</div>
+            </div>
+            
+            <p>添加成功后，主界面右上角会有一个 <strong>Publish repository</strong> 按钮（蓝色）。</p>
+            
+            <div class="screenshot-placeholder">
+                📷 真实截图位置：GitHub Desktop 主界面右上角<br>
+                <small>按钮是蓝色的，写着 "Publish repository"</small>
+            </div>
+            
+            <div class="interface-mockup">
+                <div class="mockup-window">
+                    <div class="mockup-titlebar">
+                        <div class="mockup-dots">
+                            <div class="mockup-dot dot-red"></div>
+                            <div class="mockup-dot dot-yellow"></div>
+                            <div class="mockup-dot dot-green"></div>
+                        </div>
+                        <span>GitHub Desktop</span>
+                    </div>
+                    <div class="mockup-body">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <div>
+                                <div style="font-size: 18px; font-weight: 600;">gift-ledger-app</div>
+                                <div style="font-size: 12px; color: #586069;">Current repository: gift-ledger-app</div>
+                            </div>
+                            <div class="mockup-button blue">Publish repository</div>
+                        </div>
+                        <div style="color: #586069; font-size: 13px;">
+                            No commits yet<br>
+                            Current branch: master
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <ol>
+                <li>点击右上角的 <strong>Publish repository</strong> 按钮</li>
+            </ol>
+        </div>
+        
+        <div class="step">
+            <div class="step-header">
+                <div class="step-number">6</div>
+                <div class="step-title">填写仓库信息</div>
+            </div>
+            
+            <p>弹出 "Publish repository" 对话框，填写以下信息：</p>
+            
+            <div class="interface-mockup">
+                <div class="mockup-window">
+                    <div class="mockup-titlebar">
+                        <div class="mockup-dots">
+                            <div class="mockup-dot dot-red"></div>
+                            <div class="mockup-dot dot-yellow"></div>
+                            <div class="mockup-dot dot-green"></div>
+                        </div>
+                        <span>Publish repository</span>
+                    </div>
+                    <div class="mockup-body">
+                        <label style="font-weight: 600; display: block; margin-bottom: 5px;">Name *</label>
+                        <input type="text" class="mockup-input" value="gift-ledger-app">
+                        
+                        <label style="font-weight: 600; display: block; margin-bottom: 5px; margin-top: 15px;">Description</label>
+                        <input type="text" class="mockup-input" value="人情记账 Android App - WebView 套壳应用">
+                        
+                        <div class="mockup-checkbox">
+                            <input type="checkbox" id="private">
+                            <label for="private">Keep this code private</label>
+                        </div>
+                        
+                        <div style="font-size: 12px; color: #586069; margin-top: 10px; margin-bottom: 20px;">
+                            💡 Public repositories are visible to anyone. Private repositories are only visible to you and people you share them with.
+                        </div>
+                        
+                        <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                            <div class="mockup-button gray">Cancel</div>
+                            <div class="mockup-button blue">Publish repository</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <table style="width: 100%; border-collapse: collapse; margin: 15px 0;">
+                <tr style="background: #f6f8fa;">
+                    <th style="padding: 10px; border: 1px solid #e1e4e8; text-align: left;">字段</th>
+                    <th style="padding: 10px; border: 1px solid #e1e4e8; text-align: left;">填写内容</th>
+                    <th style="padding: 10px; border: 1px solid #e1e4e8; text-align: left;">说明</th>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border: 1px solid #e1e4e8;"><strong>Name</strong></td>
+                    <td style="padding: 10px; border: 1px solid #e1e4e8;"><code>gift-ledger-app</code></td>
+                    <td style="padding: 10px; border: 1px solid #e1e4e8;">仓库名称，必须填写</td>
+                </tr>
+                <tr style="background: #f6f8fa;">
+                    <td style="padding: 10px; border: 1px solid #e1e4e8;"><strong>Description</strong></td>
+                    <td style="padding: 10px; border: 1px solid #e1e4e8;"><code>人情记账 Android App</code></td>
+                    <td style="padding: 10px; border: 1px solid #e1e4e8;">可选，描述项目</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border: 1px solid #e1e4e8;"><strong>Keep this code private</strong></td>
+                    <td style="padding: 10px; border: 1px solid #e1e4e8;">不勾选</td>
+                    <td style="padding: 10px; border: 1px solid #e1e4e8;">公开仓库（GitHub Actions 免费）</td>
+                </tr>
+            </table>
+            
+            <div class="warning-box">
+                <strong>⚠️ 注意：</strong>如果勾选 "Keep this code private"，GitHub Actions 每月只有 2000 分钟的免费额度。公开仓库是无限的。
+            </div>
+            
+            <ol start="2">
+                <li>填写完成后，点击 <strong>Publish repository</strong> 按钮</li>
+            </ol>
+        </div>
+        
+        <div class="step">
+            <div class="step-header">
+                <div class="step-number">7</div>
+                <div class="step-title">等待上传完成</div>
+            </div>
+            
+            <p>GitHub Desktop 会开始上传代码到 GitHub，主界面底部会显示进度。</p>
+            
+            <div class="interface-mockup">
+                <div class="mockup-window">
+                    <div class="mockup-titlebar">
+                        <div class="mockup-dots">
+                            <div class="mockup-dot dot-red"></div>
+                            <div class="mockup-dot dot-yellow"></div>
+                            <div class="mockup-dot dot-green"></div>
+                        </div>
+                        <span>GitHub Desktop</span>
+                    </div>
+                    <div class="mockup-body">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                            <div style="flex: 1; height: 4px; background: #e1e4e8; border-radius: 2px; overflow: hidden;">
+                                <div style="width: 60%; height: 100%; background: #2ea44f;"></div>
+                            </div>
+                            <div style="font-size: 12px; color: #586069;">60%</div>
+                        </div>
+                        <div style="color: #586069; font-size: 13px;">
+                            Publishing repository...<br>
+                            Uploading files: app/build.gradle<br>
+                            Committed 29 files
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="info-box">
+                <strong>⏳ 预计时间：</strong>1-5 分钟，取决于你的网速。
+            </div>
+            
+            <p>上传完成后，右上角的按钮会变成 <strong>View on GitHub</strong>。</p>
+        </div>
+        
+        <h2>第五步：查看自动构建状态</h2>
+        
+        <div class="step">
+            <div class="step-header">
+                <div class="step-number">8</div>
+                <div class="step-title">打开 GitHub 仓库页面</div>
+            </div>
+            
+            <p>上传完成后，点击 GitHub Desktop 右上角的 <strong>View on GitHub</strong> 按钮，浏览器会自动打开你的仓库页面。</p>
+            
+            <div class="screenshot-placeholder">
+                📷 真实截图位置：GitHub 仓库页面<br>
+                <small>顶部有一排标签：Code, Issues, Pull requests, Actions, Projects, Wiki, Security, Settings</small>
+            </div>
+        </div>
+        
+        <div class="step">
+            <div class="step-header">
+                <div class="step-number">9</div>
+                <div class="step-title">点击 Actions 标签</div>
+            </div>
+            
+            <p>在仓库页面，点击顶部的 <strong>Actions</strong> 标签，查看自动构建状态。</p>
+            
+            <div class="interface-mockup">
+                <div class="mockup-window">
+                    <div class="mockup-titlebar">
+                        <div class="mockup-dots">
+                            <div class="mockup-dot dot-red"></div>
+                            <div class="mockup-dot dot-yellow"></div>
+                            <div class="mockup-dot dot-green"></div>
+                        </div>
+                        <span>situ254/gift-ledger-app - GitHub</span>
+                    </div>
+                    <div class="mockup-body">
+                        <div style="display: flex; gap: 20px; border-bottom: 1px solid #e1e4e8; margin-bottom: 20px; padding-bottom: 10px;">
+                            <div style="color: #586069;">Code</div>
+                            <div style="color: #586069;">Issues</div>
+                            <div style="color: #586069;">Pull requests</div>
+                            <div style="color: #0366d6; border-bottom: 2px solid #0366d6; font-weight: 600;">Actions</div>
+                            <div style="color: #586069;">Projects</div>
+                            <div style="color: #586069;">Wiki</div>
+                            <div style="color: #586069;">Security</div>
+                            <div style="color: #586069;">Settings</div>
+                        </div>
+                        
+                        <div style="background: #fff3cd; border: 1px solid #ffc107; border-radius: 6px; padding: 15px; margin-bottom: 20px;">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div style="font-size: 24px;">🔄</div>
+                                <div>
+                                    <div style="font-weight: 600;">Build Android APK</div>
+                                    <div style="font-size: 13px; color: #586069;">build (push) — in progress</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="info-box">
+                <strong>🔄 构建中：</strong>你会看到一个黄色圆点 🟡，表示工作流正在运行。点击工作流名称可以查看实时日志。
+            </div>
+        </div>
+        
+        <h2>第六步：下载 APK</h2>
+        
+        <div class="step">
+            <div class="step-header">
+                <div class="step-number">10</div>
+                <div class="step-title">等待构建完成</div>
+            </div>
+            
+            <p>首次构建需要 <strong>10-30 分钟</strong>，因为 GitHub Actions 需要下载 Gradle、Android SDK 和各种依赖。</p>
+            
+            <div class="warning-box">
+                <strong>⏳ 去做点别的事吧！</strong><br>
+                可以喝杯茶 ☕、看看视频 📺，或者休息一下。<br>
+                构建完成后，GitHub 会显示一个绿色勾号 ✅。
+            </div>
+        </div>
+        
+        <div class="step">
+            <div class="step-header">
+                <div class="step-number">11</div>
+                <div class="step-title">下载 APK</div>
+            </div>
+            
+            <p>构建成功后，下载 APK 文件：</p>
+            
+            <ol>
+                <li>在 <strong>Actions</strong> 标签，点击刚刚完成的工作流</li>
+                <li>进入工作流详情页，滚动到页面底部</li>
+                <li>找到 <strong>Artifacts</strong> 部分</li>
+                <li>点击 <strong>gift-ledger-app-debug</strong></li>
+                <li>浏览器自动下载 ZIP 文件</li>
+            </ol>
+            
+            <div class="screenshot-placeholder">
+                📷 真实截图位置：GitHub Actions 工作流详情页 → 底部 Artifacts 部分<br>
+                <small>会看到 "gift-ledger-app-debug" 和 "gift-ledger-app-release" 两个下载链接</small>
+            </div>
+            
+            <div class="interface-mockup">
+                <div class="mockup-window">
+                    <div class="mockup-titlebar">
+                        <div class="mockup-dots">
+                            <div class="mockup-dot dot-red"></div>
+                            <div class="mockup-dot dot-yellow"></div>
+                            <div class="mockup-dot dot-green"></div>
+                        </div>
+                        <span>Build Android APK - GitHub Actions</span>
+                    </div>
+                    <div class="mockup-body">
+                        <div style="background: #d4edda; border: 1px solid #28a745; border-radius: 6px; padding: 15px; margin-bottom: 20px;">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div style="font-size: 24px;">✅</div>
+                                <div>
+                                    <div style="font-weight: 600; color: #155724;">Build Android APK — build succeeded</div>
+                                    <div style="font-size: 13px; color: #155724;">build (push) — 15 minutes ago</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 30px;">
+                            <div style="font-weight: 600; margin-bottom: 10px;">Artifacts</div>
+                            <div style="background: #f6f8fa; border: 1px solid #e1e4e8; border-radius: 6px; padding: 15px;">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <div style="font-size: 24px;">📦</div>
+                                    <div>
+                                        <div style="font-weight: 600; color: #0366d6; cursor: pointer;">gift-ledger-app-debug</div>
+                                        <div style="font-size: 12px; color: #586069;">app-debug.apk (5.2 MB)</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="step">
+            <div class="step-header">
+                <div class="step-number">12</div>
+                <div class="step-title">解压并获取 APK</div>
+            </div>
+            
+            <p>下载完成后：</p>
+            
+            <ol>
+                <li>找到下载的 ZIP 文件（通常在 <strong>下载</strong> 文件夹）</li>
+                <li>右键点击 → <strong>解压全部...</strong></li>
+                <li>解压后得到文件夹：<code>gift-ledger-app-debug</code></li>
+                <li>打开文件夹，找到：<code>app-debug.apk</code> 🎉</li>
+            </ol>
+            
+            <div class="success-box">
+                <strong>🎉 恭喜！</strong>你已经成功生成了 Android APK 文件！
+            </div>
+        </div>
+        
+        <h2>📚 官方文档（带真实截图）</h2>
+        
+        <div class="info-box">
+            <strong>📖 推荐阅读：</strong>以下官方文档包含真实的截图，建议配合本教程一起阅读。<br><br>
+            <a href="https://docs.github.com/en/desktop/installing-and-authenticating-to-github-desktop/installing-github-desktop" target="_blank" class="official-link">📥 安装 GitHub Desktop</a><br>
+            <a href="https://docs.github.com/en/desktop/adding-and-cloning-repositories/adding-a-repository-from-your-local-computer-to-github-desktop" target="_blank" class="official-link">📁 添加本地仓库</a><br>
+            <a href="https://docs.github.com/en/desktop/adding-and-cloning-repositories/creating-an-issue-or-pull-request" target="_blank" class="official-link">🚀 发布仓库</a><br>
+            <a href="https://docs.github.com/en/actions/quickstart" target="_blank" class="official-link">🔨 GitHub Actions 快速开始</a>
+        </div>
+        
+        <h2>❓ 常见问题</h2>
+        
+        <div class="step">
+            <div class="step-header">
+                <div class="step-number">❓</div>
+                <div class="step-title">构建失败怎么办？</div>
+            </div>
+            
+            <p>如果 GitHub Actions 构建失败：</p>
+            
+            <ol>
+                <li>在 <strong>Actions</strong> 标签，点击失败的工作流</li>
+                <li>点击 <strong>build</strong> 任务</li>
+                <li>查看红色的错误日志</li>
+                <li>常见问题：
+                    <ul>
+                        <li><strong>Gradle 同步失败</strong>：重新运行工作流</li>
+                        <li><strong>依赖下载失败</strong>：重新运行工作流</li>
+                        <li><strong>SDK 版本错误</strong>：检查 <code>build.gradle</code> 文件</li>
+                    </ul>
+                </li>
+                <li>重新运行工作流：
+                    <ul>
+                        <li>在工作流详情页，点击右上角 <strong>Re-run all jobs</strong></li>
+                    </ul>
+                </li>
+            </ol>
+        </div>
+        
+        <div class="step">
+            <div class="step-header">
+                <div class="step-number">❓</div>
+                <div class="step-title">找不到 APK 下载链接？</div>
+            </div>
+            
+            <p>如果构建成功但找不到 APK：</p>
+            
+            <ol>
+                <li>确保在 <strong>Actions</strong> 标签</li>
+                <li>点击成功的工作流</li>
+                <li>滚动到页面 <strong>最底部</strong></li>
+                <li>找到 <strong>Artifacts</strong> 部分（可能在右侧）</li>
+                <li>如果看不到，尝试刷新页面</li>
+            </ol>
+        </div>
+        
+        <h2>🎉 完成！</h2>
+        
+        <div class="success-box">
+            <strong>✅ 你已经完成以下步骤：</strong><br><br>
+            1. ✅ 安装并登录 GitHub Desktop<br>
+            2. ✅ 添加本地仓库<br>
+            3. ✅ 发布到 GitHub<br>
+            4. ✅ 触发 GitHub Actions 自动构建<br>
+            5. ✅ 下载 APK 文件<br>
+            <br>
+            <strong>下一步：将 APK 安装到手机，配置服务器地址，开始使用！</strong>
+        </div>
+        
+        <div style="margin-top: 40px; padding: 20px; background: #0366d6; color: white; border-radius: 6px; text-align: center;">
+            <h3 style="color: white; margin-bottom: 10px;">📱 需要更多帮助？</h3>
+            <p>如果在任何步骤遇到问题，可以：</p>
+            <ul style="text-align: left; display: inline-block;">
+                <li>截图发给我，我会帮你分析</li>
+                <li>描述错误信息，我会给出解决方案</li>
+                <li>参考官方文档（上面的链接）</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
