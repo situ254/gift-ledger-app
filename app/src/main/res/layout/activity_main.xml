@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/rice_white"
     tools:context=".MainActivity">
 
     <!-- WebView 全屏显示 -->
@@ -24,12 +25,13 @@
         android:layout_height="3dp"
         android:max="100"
         android:progress="0"
+        android:progressTint="@color/primary"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- 错误提示布局（网络错误等） -->
+    <!-- 错误提示布局 -->
     <LinearLayout
         android:id="@+id/errorLayout"
         android:layout_width="0dp"
@@ -43,6 +45,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <!-- 装饰图标 -->
+        <ImageView
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:src="@android:drawable/ic_menu_manage"
+            android:alpha="0.4"
+            android:layout_marginBottom="16dp"
+            app:tint="@color/primary" />
+
         <TextView
             android:id="@+id/errorTitle"
             android:layout_width="wrap_content"
@@ -50,6 +61,7 @@
             android:text="无法连接服务器"
             android:textSize="20sp"
             android:textStyle="bold"
+            android:textColor="@color/ink_black"
             android:layout_marginBottom="8dp" />
 
         <TextView
@@ -58,25 +70,33 @@
             android:layout_height="wrap_content"
             android:text="请检查网络连接或服务器地址配置"
             android:textSize="14sp"
+            android:textColor="@color/charcoal"
             android:gravity="center"
+            android:lineSpacingExtra="4dp"
             android:layout_marginBottom="24dp" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/retryButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="重试"
+            android:text="重新加载"
             android:paddingStart="32dp"
-            android:paddingEnd="32dp" />
+            android:paddingEnd="32dp"
+            app:cornerRadius="24dp"
+            app:backgroundTint="@color/primary" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/settingsButton"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="设置"
+            android:text="配置服务器"
             android:layout_marginTop="8dp"
             android:paddingStart="32dp"
-            android:paddingEnd="32dp" />
+            android:paddingEnd="32dp"
+            app:cornerRadius="24dp"
+            app:strokeColor="@color/primary"
+            android:textColor="@color/primary" />
 
     </LinearLayout>
 

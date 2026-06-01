@@ -3,208 +3,266 @@ package com.situdai.giftledger
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Bitmap
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.net.http.SslError
+import android.os.Build
 import android.os.Bundle
+import android.view.KeyEvent
 import android.webkit.CookieManager
 import android.webkit.SslErrorHandler
 import android.webkit.WebChromeClient
+import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
+import android.webkit.WebResourceResponse
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import android.widget.Button
-import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.preference.PreferenceManager
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 
 class MainActivity : AppCompatActivity() {
-    
+
     private lateinit var webView: WebView
     private lateinit var progressBar: ProgressBar
-    private lateinit var errorLayout: LinearLayout
+    private lateinit var errorLayout: android.widget.LinearLayout
     private lateinit var errorTitle: TextView
     private lateinit var errorMessage: TextView
-    private lateinit var retryButton: Button
-    private lateinit var settingsButton: Button
-    
-    private val PREFS_NAME = "GiftLedgerPrefs"
-    private val KEY_SERVER_URL = "server_url"
-    private val DEFAULT_URL = "http://你的服务器IP:9205"
-    
+
+    companion object {
+        const val KEY_SERVER_URL = "server_url"
+        const val DEFAULT_URL = ""
+    }
+
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        
+
         initViews()
         setupWebView()
-        loadUrl()
-        setupListeners()
+
+        if (!isServerConfigured()) {
+            showSetupGuide()
+        } else if (!isNetworkAvailable()) {
+            showError("网络不可用", "请检查网络连接后重试")
+        } else {
+            loadUrl()
+        }
     }
-    
+
     private fun initViews() {
         webView = findViewById(R.id.webView)
         progressBar = findViewById(R.id.progressBar)
         errorLayout = findViewById(R.id.errorLayout)
         errorTitle = findViewById(R.id.errorTitle)
         errorMessage = findViewById(R.id.errorMessage)
-        retryButton = findViewById(R.id.retryButton)
-        settingsButton = findViewById(R.id.settingsButton)
     }
-    
+
+    private fun isServerConfigured(): Boolean {
+        val url = getSavedUrl()
+        return url.isNotEmpty()
+    }
+
+    private fun getSavedUrl(): String {
+        val prefs = PreferenceManager.getDefaultSharedPreferences(this)
+        return prefs.getString(KEY_SERVER_URL, DEFAULT_URL) ?: DEFAULT_URL
+    }
+
     @SuppressLint("SetJavaScriptEnabled")
     private fun setupWebView() {
         val webSettings = webView.settings
-        
-        // 启用 JavaScript（重要！）
+
+        // JavaScript
         webSettings.javaScriptEnabled = true
-        
-        // 设置 WebView 支持的特性
-        webSettings.domStorageEnabled = true  // 启用 DOM Storage（LocalStorage）
-        webSettings.databaseEnabled = true     // 启用数据库
-        webSettings.setAppCacheEnabled(true)  // 启用 App Cache
+
+        // 存储 & 缓存
+        webSettings.domStorageEnabled = true
+        webSettings.databaseEnabled = true
         webSettings.cacheMode = WebSettings.LOAD_DEFAULT
-        
+
         // 自适应屏幕
         webSettings.useWideViewPort = true
         webSettings.loadWithOverviewMode = true
         webSettings.setSupportZoom(true)
         webSettings.builtInZoomControls = true
         webSettings.displayZoomControls = false
-        
-        // 其他设置
-        webSettings.allowFileAccess = true
-        webSettings.allowContentAccess = true
-        webSettings.mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
-        
-        // 配置 Cookie 管理器（保持登录状态）
+
+        // 文件访问
+        webSettings.allowFileAccess = false
+        webSettings.allowContentAccess = false
+
+        // 混合内容
+        webSettings.mixedContentMode = WebSettings.MIXED_CONTENT_NEVER_ALLOW
+
+        // Cookie 持久化
         val cookieManager = CookieManager.getInstance()
         cookieManager.setAcceptCookie(true)
         cookieManager.setAcceptThirdPartyCookies(webView, true)
-        
-        // 设置 User-Agent（可选，模拟移动浏览器）
+
+        // User-Agent
         val userAgent = webSettings.userAgentString
-        webSettings.userAgentString = "$userAgent GiftLedgerApp/1.0"
-        
-        // WebView 客户端
+        webSettings.userAgentString = "$userAgent GiftLedgerApp/2.0"
+
+        // WebViewClient
         webView.webViewClient = object : WebViewClient() {
-            
-            override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
-                // 在 WebView 内打开所有链接
-                return false
+
+            override fun shouldOverrideUrlLoading(
+                view: WebView?,
+                request: WebResourceRequest?
+            ): Boolean {
+                val url = request?.url?.toString() ?: return false
+                // 只允许 http/https 协议，阻止其他协议跳转
+                return !url.startsWith("http://") && !url.startsWith("https://")
             }
-            
+
             override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
                 super.onPageStarted(view, url, favicon)
                 progressBar.visibility = ProgressBar.VISIBLE
-                errorLayout.visibility = LinearLayout.GONE
+                errorLayout.visibility = android.widget.LinearLayout.GONE
             }
-            
+
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
                 progressBar.visibility = ProgressBar.GONE
+                // 确保 Cookie 持久化
+                CookieManager.getInstance().flush()
             }
-            
-            @Deprecated("Deprecated in Java")
-            override fun onReceivedError(view: WebView?, errorCode: Int, description: String?, failingUrl: String?) {
-                super.onReceivedError(view, errorCode, description, failingUrl)
-                showError("网络连接失败", "无法加载页面：$description")
+
+            override fun onReceivedError(
+                view: WebView?,
+                request: WebResourceRequest?,
+                error: WebResourceError?
+            ) {
+                super.onReceivedError(view, request, error)
+                if (request?.isForMainFrame == true) {
+                    showError("加载失败", "无法连接服务器，请检查地址配置和网络连接")
+                }
             }
-            
-            override fun onReceivedSslError(view: WebView?, handler: SslErrorHandler?, error: SslError?) {
-                // 开发环境可能使用自签名证书，这里选择继续（仅开发用）
-                handler?.proceed()
+
+            override fun onReceivedHttpError(
+                view: WebView?,
+                request: WebResourceRequest?,
+                errorResponse: WebResourceResponse?
+            ) {
+                super.onReceivedHttpError(view, request, errorResponse)
+                if (request?.isForMainFrame == true && errorResponse?.statusCode == 401) {
+                    // JWT 过期，让前端自行处理登录跳转
+                }
+            }
+
+            override fun onReceivedSslError(
+                view: WebView?,
+                handler: SslErrorHandler?,
+                error: SslError?
+            ) {
+                // 生产环境不忽略 SSL 错误，仅提示用户
+                showError("SSL 错误", "服务器证书验证失败，请检查服务器配置")
+                handler?.cancel()
             }
         }
-        
-        // WebChromeClient 用于处理进度、标题等
+
+        // WebChromeClient
         webView.webChromeClient = object : WebChromeClient() {
             override fun onProgressChanged(view: WebView?, newProgress: Int) {
                 super.onProgressChanged(view, newProgress)
                 progressBar.progress = newProgress
-                progressBar.visibility = if (newProgress == 100) ProgressBar.GONE else ProgressBar.VISIBLE
+                if (newProgress == 100) {
+                    progressBar.visibility = ProgressBar.GONE
+                }
             }
         }
     }
-    
+
     private fun loadUrl() {
-        val prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
-        val serverUrl = prefs.getString(KEY_SERVER_URL, DEFAULT_URL) ?: DEFAULT_URL
-        
-        if (serverUrl.isNotEmpty() && serverUrl != "http://你的服务器IP:9205") {
+        val serverUrl = getSavedUrl()
+        if (serverUrl.isNotEmpty()) {
+            hideError()
             webView.loadUrl(serverUrl)
         } else {
-            showError("未配置服务器地址", "请点击右上角菜单，设置服务器地址")
+            showSetupGuide()
         }
     }
-    
+
+    private fun showSetupGuide() {
+        showError("欢迎使用人情记账", "首次使用需配置服务器地址，请点击下方按钮进入设置")
+    }
+
+    private fun isNetworkAvailable(): Boolean {
+        val cm = getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
+        val network = cm.activeNetwork ?: return false
+        val caps = cm.getNetworkCapabilities(network) ?: return false
+        return caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+    }
+
     private fun showError(title: String, message: String) {
         webView.visibility = WebView.GONE
-        errorLayout.visibility = LinearLayout.VISIBLE
+        progressBar.visibility = ProgressBar.GONE
+        errorLayout.visibility = android.widget.LinearLayout.VISIBLE
         errorTitle.text = title
         errorMessage.text = message
     }
-    
+
     private fun hideError() {
-        errorLayout.visibility = LinearLayout.GONE
+        errorLayout.visibility = android.widget.LinearLayout.GONE
         webView.visibility = WebView.VISIBLE
     }
-    
-    private fun setupListeners() {
-        retryButton.setOnClickListener {
-            hideError()
-            loadUrl()
-        }
-        
-        settingsButton.setOnClickListener {
-            val intent = Intent(this, SettingsActivity::class.java)
-            startActivity(intent)
-        }
-    }
-    
+
     override fun onCreateOptionsMenu(menu: android.view.Menu): Boolean {
         menuInflater.inflate(R.menu.main_menu, menu)
         return true
     }
-    
+
     override fun onOptionsItemSelected(item: android.view.MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_settings -> {
-                val intent = Intent(this, SettingsActivity::class.java)
-                startActivity(intent)
+                startActivity(Intent(this, SettingsActivity::class.java))
                 true
             }
             R.id.action_refresh -> {
-                webView.reload()
+                if (isServerConfigured()) webView.reload()
+                else showSetupGuide()
                 true
             }
             R.id.action_clear_cache -> {
                 webView.clearCache(true)
                 CookieManager.getInstance().removeAllCookies(null)
+                CookieManager.getInstance().flush()
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
     }
-    
-    override fun onBackPressed() {
-        if (webView.canGoBack()) {
+
+    // 处理返回键：优先 WebView 后退
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        if (keyCode == KeyEvent.KEYCODE_BACK && webView.canGoBack()) {
             webView.goBack()
-        } else {
-            super.onBackPressed()
+            return true
         }
+        return super.onKeyDown(keyCode, event)
     }
-    
+
+    override fun onPause() {
+        super.onPause()
+        CookieManager.getInstance().flush()
+    }
+
     override fun onResume() {
         super.onResume()
-        // 从设置页面返回时，重新加载 URL
-        val prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+        // 从设置页返回时，如果 URL 变更则重新加载
+        val savedUrl = getSavedUrl()
         val currentUrl = webView.url
-        val savedUrl = prefs.getString(KEY_SERVER_URL, DEFAULT_URL) ?: DEFAULT_URL
-        
-        if (currentUrl != savedUrl && savedUrl.isNotEmpty()) {
+        if (savedUrl.isNotEmpty() && currentUrl != savedUrl) {
             loadUrl()
         }
+    }
+
+    override fun onDestroy() {
+        webView.destroy()
+        super.onDestroy()
     }
 }

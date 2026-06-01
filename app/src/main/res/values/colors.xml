@@ -1,19 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primary">#2196F3</color>
-    <color name="primary_dark">#1976D2</color>
-    <color name="primary_light">#BBDEFB</color>
-    <color name="secondary">#4CAF50</color>
-    <color name="secondary_dark">#388E3C</color>
-    <color name="secondary_light">#C8E6C9</color>
+    <!-- 新中式奢华配色方案 -->
+    <color name="primary">#C62828</color>           <!-- 深红 800 -->
+    <color name="primary_dark">#8B1538</color>       <!-- 酒红 -->
+    <color name="primary_light">#FFCDD2</color>      <!-- 浅红 100 -->
+    <color name="secondary">#D4AF37</color>          <!-- 奢华金 -->
+    <color name="secondary_dark">#C49A48</color>     <!-- 香槟金 -->
+    <color name="secondary_light">#FFF8E1</color>    <!-- 浅金 -->
+    <color name="accent">#E63946</color>             <!-- 朱红 -->
+
+    <!-- 水墨中性色 -->
+    <color name="ink_black">#1A1A1A</color>          <!-- 墨黑 -->
+    <color name="charcoal">#2D2D2D</color>           <!-- 炭灰 -->
     <color name="primary_text">#212121</color>
     <color name="secondary_text">#757575</color>
-    <color name="white_text">#FFFFFF</color>
-    <color name="background">#FAFAFA</color>
-    <color name="background_grey">#F5F5F5</color>
+    <color name="cloud_gray">#E8E8E8</color>         <!-- 云灰 -->
+    <color name="rice_white">#FAF8F5</color>         <!-- 米白 -->
+    <color name="parchment">#F5F0E8</color>          <!-- 宣纸色 -->
+    <color name="background">#FAF8F5</color>
+    <color name="background_grey">#F5F0E8</color>
     <color name="surface">#FFFFFF</color>
-    <color name="error">#F44336</color>
-    <color name="success">#4CAF50</color>
-    <color name="warning">#FFC107</color>
+
+    <!-- 功能色 -->
+    <color name="error">#C62828</color>
+    <color name="success">#2E7D32</color>
+    <color name="warning">#F57F17</color>
+    <color name="luxury_gold">#D4AF37</color>
     <color name="webview_background">#FFFFFF</color>
 </resources>
