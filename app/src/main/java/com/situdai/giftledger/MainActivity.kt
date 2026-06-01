@@ -6,7 +6,6 @@ import android.graphics.Bitmap
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.http.SslError
-import android.os.Build
 import android.os.Bundle
 import android.view.KeyEvent
 import android.webkit.CookieManager
@@ -21,9 +20,9 @@ import android.webkit.WebViewClient
 import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.PreferenceManager
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 
 class MainActivity : AppCompatActivity() {
 
@@ -48,8 +47,6 @@ class MainActivity : AppCompatActivity() {
 
         if (!isServerConfigured()) {
             showSetupGuide()
-        } else if (!isNetworkAvailable()) {
-            showError("网络不可用", "请检查网络连接后重试")
         } else {
             loadUrl()
         }
@@ -100,12 +97,13 @@ class MainActivity : AppCompatActivity() {
         webSettings.builtInZoomControls = true
         webSettings.displayZoomControls = false
 
-        // 文件访问
+        // 文件访问（保留安全限制）
         webSettings.allowFileAccess = false
         webSettings.allowContentAccess = false
 
-        // 混合内容
-        webSettings.mixedContentMode = WebSettings.MIXED_CONTENT_NEVER_ALLOW
+        // 【关键修复】允许混合内容：HTTP 页面中的 HTTP API 请求
+        // 因为用户的服务器通常是纯 HTTP 部署，需要允许同源 HTTP 请求
+        webSettings.mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
 
         // Cookie 持久化
         val cookieManager = CookieManager.getInstance()
@@ -168,9 +166,17 @@ class MainActivity : AppCompatActivity() {
                 handler: SslErrorHandler?,
                 error: SslError?
             ) {
-                // 生产环境不忽略 SSL 错误，仅提示用户
-                showError("SSL 错误", "服务器证书验证失败，请检查服务器配置")
-                handler?.cancel()
+                // 【关键修复】内网/自签名证书场景下允许继续加载
+                // 用户自行配置的服务器地址，信任其证书
+                val url = view?.url ?: ""
+                val savedUrl = getSavedUrl()
+                if (url.startsWith(savedUrl) || savedUrl.isEmpty()) {
+                    handler?.proceed()
+                } else {
+                    // 非用户配置的地址出现 SSL 错误，仍然拒绝
+                    showError("SSL 错误", "服务器证书验证失败：${error?.toString()?.substringBefore('\n')}")
+                    handler?.cancel()
+                }
             }
         }
 
@@ -240,6 +246,7 @@ class MainActivity : AppCompatActivity() {
                 webView.clearCache(true)
                 CookieManager.getInstance().removeAllCookies(null)
                 CookieManager.getInstance().flush()
+                Toast.makeText(this, "缓存已清除", Toast.LENGTH_SHORT).show()
                 true
             }
             else -> super.onOptionsItemSelected(item)
