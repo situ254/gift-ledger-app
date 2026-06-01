@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">人情记账</string>
+    <string name="error_network">网络连接失败</string>
+    <string name="error_load">无法加载页面</string>
+    <string name="button_retry">重试</string>
+    <string name="button_settings">设置</string>
+    <string name="button_save">保存</string>
+    <string name="button_reset">恢复默认</string>
+    <string name="button_clear_cache">清除缓存和 Cookie</string>
+    <string name="settings_save_success">保存成功</string>
+    <string name="settings_reset_success">已恢复默认设置</string>
+    <string name="settings_clear_success">缓存和 Cookie 已清除</string>
+</resources>
