@@ -32,6 +32,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var errorTitle: TextView
     private lateinit var errorMessage: TextView
 
+    /** 最近一次 loadUrl 实际使用的服务器地址（用于判断"配置是否被修改"，而不是"URL 是否变化"） */
+    private var appliedUrl: String? = null
+
     companion object {
         const val KEY_SERVER_URL = "server_url"
         const val DEFAULT_URL = ""
@@ -146,6 +149,8 @@ class MainActivity : AppCompatActivity() {
             ) {
                 super.onReceivedError(view, request, error)
                 if (request?.isForMainFrame == true) {
+                    // 主页面加载失败：清掉"已应用地址"，这样下次回到前台会自动重试
+                    appliedUrl = null
                     showError("加载失败", "无法连接服务器，请检查地址配置和网络连接")
                 }
             }
@@ -196,6 +201,7 @@ class MainActivity : AppCompatActivity() {
         val serverUrl = getSavedUrl()
         if (serverUrl.isNotEmpty()) {
             hideError()
+            appliedUrl = serverUrl
             webView.loadUrl(serverUrl)
         } else {
             showSetupGuide()
@@ -269,10 +275,15 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        // 从设置页返回时，如果 URL 变更则重新加载
+        // 【关键修复】只有「用户在设置页修改了服务器地址」时才重新加载整页。
+        //
+        // 原实现比较的是 webView.url 与配置地址：
+        // SPA 内部跳转（/login、/given、/received …）会让当前 URL 与配置的根地址不同，
+        // 于是每次回到前台都会 loadUrl() 重载页面。
+        // 手机密码管理器弹出自填充浮层会触发 onPause/onResume，
+        // 用户填好账号密码后浮层关闭 → 页面被重载 → 输入框直接变空（闪一下清空）。
         val savedUrl = getSavedUrl()
-        val currentUrl = webView.url
-        if (savedUrl.isNotEmpty() && currentUrl != savedUrl) {
+        if (savedUrl.isNotEmpty() && savedUrl != appliedUrl) {
             loadUrl()
         }
     }
