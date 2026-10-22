@@ -9,6 +9,8 @@ local.properties
 *.swo
 *.jks
 *.keystore
+# 例外：构建用的签名文件随仓库提交，保证 CI 与本地签名一致
+!app/debug.keystore
 captures/
 external_native_builds/
 .cxx/

@@ -18,7 +18,10 @@ android {
     signingConfigs {
         release {
             // 使用调试签名（正式发布时应替换为自己的签名）
+            // debug.keystore 已随仓库提交，保证 CI 与本地签名一致，
+            // 否则每次构建签名都不同，装机时无法覆盖升级。
             storeFile file('debug.keystore')
+            storeType 'PKCS12'
             storePassword 'android'
             keyAlias 'androiddebugkey'
             keyPassword 'android'
